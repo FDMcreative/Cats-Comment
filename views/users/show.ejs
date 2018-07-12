@@ -1,0 +1,41 @@
+<div>
+  <img src="<%= user.image %>" alt="<%= user.name %>">
+  <h2><%= user.name %></h2>
+  <p>
+    <%= user.gender %><br>
+    <%= user.age %><br>
+    <%= user.country %><br>
+    <%= user.faculty %>
+  </p>
+
+  <p>
+    <% while(user.stars--) { %> &star; <% } %>
+  </p>
+
+  <section>
+    <h4>Comments</h4>
+    <% user.comments.forEach((comment) => { %>
+      <p><%= comment.content %></p>
+      <small><%= comment.createdBy.username %></small>
+
+      <% if(locals.isAuthenticated && comment.ownedBy(user)) { %>
+        <form method="POST" action="/users/<%= user.id %>/comments/<%= comment.id %>">
+          <input type="hidden" name="_method" value="DELETE">
+          <button>Delete</button>
+        </form>
+      <% } %>
+    <% }) %>
+  </section>
+
+  </section>
+
+  <% if(locals.isAuthenticated) { %>
+    <section>
+      <h4>Leave a comment</h4>
+      <form method="POST" action="/users/<%= user.id %>/comments">
+        <textarea name="content" id="content" placeholder="Comment"></textarea>
+        <button class="button">Leave a comment</button>
+      </form>
+    </section>
+  <% } %>
+</div>
