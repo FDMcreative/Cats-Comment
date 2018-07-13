@@ -9,6 +9,19 @@
     <%= user.faculty %>
   </p>
 
+
+  <% if(locals.isAuthenticated && locals.user === user) { %>
+
+    <a href="/users/<%= user.id %>/edit" class="btn btn-primary">Edit Yourself</a>
+
+    <form method="POST" action="/users/<%= user.id %>">
+      <input type="hidden" name="_method" value="DELETE">
+      <button class="btn btn-danger">Delete Yourself</button>
+    </form>
+
+  <% } %>
+
+
   <section>
     <h4>Comments</h4>
     <% user.comments.forEach((comment) => { %>
@@ -16,12 +29,14 @@
       <small><%= comment.createdBy.username %></small>
 
       <% if(locals.isAuthenticated && comment.ownedBy(user)) { %>
+
         <form method="POST" action="/users/<%= user.id %>/comments/<%= comment.id %>">
           <input type="hidden" name="_method" value="DELETE">
           <button>Delete your comment</button>
         </form>
+
       <% } %>
-      
+
     <% }) %>
   </section>
 
