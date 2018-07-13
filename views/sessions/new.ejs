@@ -1,29 +1,23 @@
-<div class="row">
-
-  <div id="loginForm" class="col-md-6" style="border: 1px solid red">
-
+<div class="row justify-content-center">
+  <div class="col-md-4">
     <h4>Login</h4>
 
     <form method="POST" action="/login">
 
-      <div>
-        <label for="email">Email:</label>
-        <input type="text" name="email" id="email" required>
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" placeholder="Enter your email">
+        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
       </div>
 
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password" required>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" name="password" id="password" placeholder="Enter your password">
       </div>
 
-      <button class="btn btn-warning btn-block">Login</button>
+      <button type="submit" class="btn btn-warning btn-block">Login</button>
 
     </form>
 
   </div>
-
-  <div id="loginImage" class="col-md-6" style="border: 1px solid blue">
-
-  </div>
-
 </div>
