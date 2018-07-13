@@ -1,4 +1,5 @@
 <div>
+
   <img src="<%= user.image %>" alt="<%= user.name %>">
   <h2><%= user.name %></h2>
   <p>
@@ -6,10 +7,6 @@
     <%= user.age %><br>
     <%= user.country %><br>
     <%= user.faculty %>
-  </p>
-
-  <p>
-    <% while(user.stars--) { %> &star; <% } %>
   </p>
 
   <section>
@@ -21,9 +18,10 @@
       <% if(locals.isAuthenticated && comment.ownedBy(user)) { %>
         <form method="POST" action="/users/<%= user.id %>/comments/<%= comment.id %>">
           <input type="hidden" name="_method" value="DELETE">
-          <button>Delete</button>
+          <button>Delete your comment</button>
         </form>
       <% } %>
+      
     <% }) %>
   </section>
 
@@ -31,11 +29,12 @@
 
   <% if(locals.isAuthenticated) { %>
     <section>
-      <h4>Leave a comment</h4>
+      <h4>How is your mate?</h4>
       <form method="POST" action="/users/<%= user.id %>/comments">
         <textarea name="content" id="content" placeholder="Comment"></textarea>
-        <button class="button">Leave a comment</button>
+        <button class="button">post your comment</button>
       </form>
     </section>
   <% } %>
+
 </div>
