@@ -1,65 +1,62 @@
-//require the packages
+// require modules
 const express = require('express');
-const expressLayouts = require('express-ejs-layouts');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
-const session = require('express-session');
-const flash = require('express-flash');
-const methodOverride = require('method-override')
+const expressLayouts = require('express-ejs-layouts');
 const bodyParser = require('body-parser');
-const { port, env, dbURI, sessionSecret } = require('./config/environment');
-const errorHandler = require('./lib/errorHandler');
+const methodOverride = require('method-override');
+const session = require('express-session');
+const flash = require('express-flash'); //it must come after the sessions cause they rely on session cookies, check below
 const routes = require('./config/routes');
+const User = require('./models/user');
 const customResponses = require('./lib/customResponses');
-const authentication = require('./lib/authentication');
+const authenticationUser = require('./lib/authenticationUser');
+const errorHandler = require('./lib/errorHandler');
 
-//create an express app
+const {port, env, dbURI} = require('./config/environment');
+
+//setup express app
 const app = express();
-
-//set up the template engine
 app.set('view engine', 'ejs');
-app.set('views', `${__dirname}/views`);
-app.use(expressLayouts);
+app.set('views', `${__dirname}/views`)
 
-//set up the static folder
-app.use(express.static(`${__dirname}/public`));
+//setup database
+mongoose.connect(dbURI);
 
-//connect to our database
-mongoose.connect(dbURI, {useNewUrlParser: true });
-
-//set up middleware
+//middleware
 if(env !== 'test') app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({ extended: true}));
-app.use(methodOverride((req) => {
-  if(req.body && typeof req.body === 'object' && '_method' in req.body) {
+
+app.use(expressLayouts);
+app.use(express.static(`${__dirname}/public`));
+app.use(bodyParser.urlencoded({ extended:true }));
+
+// Use methodOverride
+app.use(methodOverride(function (req) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
     const method = req.body._method;
     delete req.body._method;
-
     return method;
   }
 }));
 
-//set up session
 app.use(session({
-  secret: sessionSecret,
+  secret: process.env.SESSION_SECRET || 'ssh it\'s a secret',
   resave: false,
   saveUninitialized: false
 }));
-
-//set up flash messages AFTER session
-// (cause it stores the messages in session)
+//after m.msession
 app.use(flash());
 
-//set up custom middleware
+//these are moved inside lib folder
+app.use(authenticationUser);
+
 app.use(customResponses);
-app.use(authentication);
-//set up routes
-// (just before error handler)
+
 app.use(routes);
 
-//set up error error handler
-// (always the LAST middleware just before listen)
+//to catch 500 error, send message to user and keep server running to void crashes
 app.use(errorHandler);
 
-app.listen(port, () => console.log(`express is listening to port ${port}`));
+app.listen(port, () => console.log(`Express is listening on port ${port}`));

@@ -3,8 +3,10 @@
 
   <head>
     <meta charset="utf-8">
-    <title>The FaceboOok</title>
+    <title>Cats Comment</title>
+
     <% include ./partials/stylesheets %>
+
   </head>
 
   <body>
@@ -15,11 +17,13 @@
 
     <% for(const type in messages) { %>
       <div class="<%= type %>">
-        <h5><%= messages[type] %></h5>
+        <div class="container">
+          <%= messages[type] %>
+        </div>
       </div>
     <% } %>
 
-    <main>
+    <main class="container">
       <%- body %>
     </main>
 

@@ -6,24 +6,23 @@ function sessionsNew(req, res) {
 
 function sessionsCreate(req, res, next) {
   User
-    .findOne({ email: req.body.email })
-    .then((user) => {
-      if(!user || !user.validatePassword(req.body.password)) {
-        req.flash('danger', 'Unknown email/password combination');
-        return res.redirect('/login');
-      }
+     .findOne({ email: req.body.email })
+     .then((user) => {
+       if(!user || !user.validatePassword(req.body.password)) {
+         req.flash('danger', 'Unknown email/password combination');
+         return res.redirect('/login');
+       }
 
-      req.session.userId = user.id;
-      req.session.isAuthenticated = true;
+       req.session.userId = user.id;
+       req.session.isAuthenticated = true;
 
-      req.user = user;
-
-      req.flash('success', `Welcome back, ${user.username}!`);
-      res.redirect('/');
-    })
-    .catch(next);
+       req.flash('success', `Welcome back, ${user.username}!`);
+       res.redirect('/');
+     })
+     .catch(next);
 }
-
+ // LOGOUT
+  // In order to log out we need to regenerate our session, and redirect the user to the homepage:
 function sessionsDelete(req, res) {
   req.session.regenerate(() => res.redirect('/'));
 }

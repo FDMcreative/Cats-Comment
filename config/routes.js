@@ -1,32 +1,45 @@
-const router = require('express').Router();
+// const router = require('express').Router();
+const express = require('express');
+const router = express.Router();
+const registrationsController = require('../controllers/registrations');
+const sessionsController = require('../controllers/sessions');
+const catsController = require('../controllers/cats');
 const secureRoute = require('../lib/secureRoute');
-const sessions = require('../controllers/sessions');
-const registrations = require('../controllers/registrations');
-const users = require('../controllers/users');
 
-router.get('/', (req, res) => res.render('statics/index'));
+//normal mode
+router.get('/', (req,res) => res.render('statics/index'));
+//concise mode
+router.route('/cats')
+  .get(catsController.index)
+  .post(secureRoute, catsController.create);
 
-router.route('/users')
-  .get(users.index)
+router.route('/cats/new')
+  .get(secureRoute, catsController.new);
 
-router.route('/users/:id/edit')
-  .get(secureRoute, users.edit);
+router.route('/cats/:id')
+  .get(catsController.show)
+  .put(secureRoute, catsController.update)
+  .delete(secureRoute, catsController.delete);
 
-router.route('/users/:id')
-  .get(users.show)
-  .put(secureRoute, users.update)
-  .delete(secureRoute, users.delete);
+router.route('/cats/:id/edit')
+  .get(secureRoute, catsController.edit);
+
+router.route('/cats/:id/comments')
+  .post(secureRoute, hotels.createComment);
+
+router.route('/cats/:id/comments/:commentId')
+  .delete(secureRoute, hotels.deleteComment);
 
 router.route('/register')
-  .get(registrations.new)
-  .post(registrations.create);
+  .get(registrationsController.new)
+  .post(registrationsController.create);
 
 router.route('/login')
-  .get(sessions.new)
-  .post(sessions.create);
+  .get(sessionsController.new)
+  .post(sessionsController.create);
 
 router.route('/logout')
-  .get(sessions.delete);
+  .get(sessionsController.delete);
 
 router.all('*', (req, res) => res.notFound());
 
