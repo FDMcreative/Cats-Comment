@@ -25,10 +25,10 @@ router.route('/cats/:id/edit')
   .get(secureRoute, catsController.edit);
 
 router.route('/cats/:id/comments')
-  .post(secureRoute, hotels.createComment);
+  .post(secureRoute, catsController.createComment);
 
 router.route('/cats/:id/comments/:commentId')
-  .delete(secureRoute, hotels.deleteComment);
+  .delete(secureRoute, catsController.deleteComment);
 
 router.route('/register')
   .get(registrationsController.new)

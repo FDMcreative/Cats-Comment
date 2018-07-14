@@ -14,24 +14,25 @@ const customResponses = require('./lib/customResponses');
 const authenticationUser = require('./lib/authenticationUser');
 const errorHandler = require('./lib/errorHandler');
 
-const {port, env, dbURI} = require('./config/environment');
+const {port, env, dbURI, sessionSecret} = require('./config/environment');
 
 //setup express app
 const app = express();
+
+//set up template engine
 app.set('view engine', 'ejs');
-app.set('views', `${__dirname}/views`)
-
-//setup database
-mongoose.connect(dbURI);
-
-//middleware
-if(env !== 'test') app.use(morgan('dev'));
-
+app.set('views', `${__dirname}/views`);
 app.use(expressLayouts);
-app.use(express.static(`${__dirname}/public`));
-app.use(bodyParser.urlencoded({ extended:true }));
 
-// Use methodOverride
+//set up static folder
+app.use(express.static(`${__dirname}/public`));
+
+//set up database
+mongoose.connect(dbURI, {useNewUrlParser: true });
+
+//set up middleware
+if(env !== 'test') app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({ extended:true }));
 app.use(methodOverride(function (req) {
   if (req.body && typeof req.body === 'object' && '_method' in req.body) {
     // look in urlencoded POST bodies and delete it
@@ -41,22 +42,26 @@ app.use(methodOverride(function (req) {
   }
 }));
 
+//set up session
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'ssh it\'s a secret',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false
 }));
-//after m.msession
+
+//set up flash messages AFTER session
+// (cause it stores the messages in session)
 app.use(flash());
 
-//these are moved inside lib folder
+//set up custom middleware Lib Folder
 app.use(authenticationUser);
-
 app.use(customResponses);
-
+//set up routes
+// (just before error handler)
 app.use(routes);
 
-//to catch 500 error, send message to user and keep server running to void crashes
+//set up error error handler - to catch 500 error, send message to user and keep server running and avoid crashes
+// (always the LAST middleware just before listen)
 app.use(errorHandler);
 
 app.listen(port, () => console.log(`Express is listening on port ${port}`));
